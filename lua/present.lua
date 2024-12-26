@@ -62,6 +62,12 @@ local options = {
     javascript = M.create_system_executor "node",
     python = M.create_system_executor "python",
   },
+  keymaps = {
+    next = 'n',
+    previous = 'p',
+    quit = 'q',
+    execute = 'X',
+  },
   circular_slide = false,
 }
 
@@ -72,6 +78,14 @@ M.setup = function(opts)
   opts.executors.lua = opts.executors.lua or execute_lua_code
   opts.executors.javascript = opts.executors.javascript or M.create_system_executor "node"
   opts.executors.python = opts.executors.python or M.create_system_executor "python"
+
+  opts.keymaps = opts.keymaps or {}
+
+  for action, key in pairs(options.keymaps) do
+    if not opts.keymaps[action] then
+      opts.keymaps[action] = key
+    end
+  end
 
   options = opts
 end
@@ -256,7 +270,7 @@ M.start_presentation = function(opts)
     vim.api.nvim_buf_set_lines(state.floats.footer.buf, 0, -1, false, { footer })
   end
 
-  present_keymap("n", "n", function()
+  present_keymap("n", options.keymaps.next, function()
     if options.circular_slide == true and state.current_slide >= #state.parsed.slides then
       state.current_slide = 1
     else
@@ -266,7 +280,7 @@ M.start_presentation = function(opts)
     set_slide_content(state.current_slide)
   end)
 
-  present_keymap("n", "p", function()
+  present_keymap("n", options.keymaps.previous, function()
     if options.circular_slide == true and state.current_slide - 1 <= 0 then
       state.current_slide = #state.parsed.slides
     else
@@ -276,11 +290,11 @@ M.start_presentation = function(opts)
     set_slide_content(state.current_slide)
   end)
 
-  present_keymap("n", "q", function()
+  present_keymap("n", options.keymaps.quit, function()
     vim.api.nvim_win_close(state.floats.body.win, true)
   end)
 
-  present_keymap("n", "X", function()
+  present_keymap("n", options.keymaps.execute, function()
     local slide = state.parsed.slides[state.current_slide]
 
     local block = slide.blocks[1]
