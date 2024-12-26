@@ -69,8 +69,8 @@ M.setup = function(opts)
   opts.executors = opts.executors or {}
 
   opts.executors.lua = opts.executors.lua or execute_lua_code
-  opts.executors.javascript = opts.executors.lua or M.create_system_executor "node"
-  opts.executors.python = opts.executors.lua or M.create_system_executor "python"
+  opts.executors.javascript = opts.executors.javascript or M.create_system_executor "node"
+  opts.executors.python = opts.executors.python or M.create_system_executor "python"
 
   options = opts
 end
@@ -271,7 +271,7 @@ M.start_presentation = function(opts)
 
   present_keymap("n", "X", function()
     local slide = state.parsed.slides[state.current_slide]
-    -- TODO: Make a way for people to execute this for other languages
+
     local block = slide.blocks[1]
     if not block then
       print("No blocks on this page")
@@ -348,8 +348,8 @@ M.start_presentation = function(opts)
       end
 
       local updated = create_window_configurations()
-      foreach_float(function(name, _)
-        vim.api.nvim_win_set_config(state.floats[name].win, updated[name])
+      foreach_float(function(name, float)
+        vim.api.nvim_win_set_config(float.win, updated[name])
       end)
 
       -- Re-calculates current slide contents
