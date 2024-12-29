@@ -83,8 +83,8 @@ describe("present.parse_slides", function()
     }, slide.body)
 
     eq({
-      language = 'lua',
-      body = "print('hi')",
+      language = 'python',
+      body = "#just a comment\nprint('hi')",
     }, slide.blocks[1])
   end)
 end)
