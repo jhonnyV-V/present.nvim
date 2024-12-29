@@ -114,9 +114,14 @@ local parse_slides = function(lines)
   }
 
   local separator = "^#"
+  local inside_block = false
 
   for _, line in ipairs(lines) do
-    if line:find(separator) then
+    if vim.startswith(line, "```") then
+      inside_block = not inside_block
+    end
+
+    if line:find(separator) and not inside_block then
       if #current_slide.title > 0 then
         table.insert(slides.slides, current_slide)
       end
@@ -132,13 +137,13 @@ local parse_slides = function(lines)
   end
 
   table.insert(slides.slides, current_slide)
+  inside_block = false
 
   for _, slide in ipairs(slides.slides) do
     local block = {
       language = nil,
       body = "",
     }
-    local inside_block = false
     for _, line in ipairs(slide.body) do
       if vim.startswith(line, "```") then
         if not inside_block then
